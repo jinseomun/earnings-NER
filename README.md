@@ -42,7 +42,7 @@ Financial Information Extraction
 
 Hugging Face Dataset:
 
-https://huggingface.co/datasets/soumakchak/earnings_call_dataset
+https://huggingface.co/datasets/jlh-ibm/earnings_call
 
 ---
 
