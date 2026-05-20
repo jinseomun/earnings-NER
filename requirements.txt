@@ -1,0 +1,8 @@
+spacy
+pandas
+numpy
+tqdm
+scikit-learn
+jupyter
+python-dotenv
+requests
