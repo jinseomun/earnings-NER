@@ -6,12 +6,12 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 from src.analysis.statistics import (
-    clean_text,
     compute_basic_statistics,
     statistics_to_dataframe
 )
 from src.analysis.ngram import extract_ngrams
 from src.analysis.tfidf import extract_tfidf_keywords
+
 from src.preprocessing.text_cleaner import clean_transcript
 from src.preprocessing.section_split import split_sections
 from src.preprocessing.speaker_split import split_speakers
@@ -72,7 +72,7 @@ def main():
 
     for t in data[text_col]:
         cleaned = clean_transcript(t)
-        
+
         if cleaned:
             texts.append(cleaned)
 
@@ -134,7 +134,12 @@ def main():
         f"{OUTPUT_PREPROCESSING_DIR}/sentence_split.json"
     )
 
-    utterance_texts = [item["text"] for item in sentence_results]
+    # sentence filtering까지 끝난 문장만 TF-IDF / n-gram 입력으로 사용
+    utterance_texts = [
+        " ".join(item["sentences"])
+        for item in sentence_results
+        if item["sentences"]
+    ]
 
     print("Computing basic statistics...")
     stats = compute_basic_statistics(texts)
@@ -166,9 +171,26 @@ def main():
     )
 
     print("Extracting n-grams...")
-    unigram_df = extract_ngrams(utterance_texts, ngram_range=(1, 1), max_features=50)
-    bigram_df = extract_ngrams(utterance_texts, ngram_range=(2, 2), max_features=50)
-    trigram_df = extract_ngrams(utterance_texts, ngram_range=(3, 3), max_features=50)
+    unigram_df = extract_ngrams(
+        utterance_texts,
+        nlp,
+        ngram_range=(1, 1),
+        max_features=50
+    )
+
+    bigram_df = extract_ngrams(
+        utterance_texts,
+        nlp,
+        ngram_range=(2, 2),
+        max_features=50
+    )
+
+    trigram_df = extract_ngrams(
+        utterance_texts,
+        nlp,
+        ngram_range=(3, 3),
+        max_features=50
+    )
 
     print("Extracting TF-IDF keywords...")
     tfidf_df = extract_tfidf_keywords(
