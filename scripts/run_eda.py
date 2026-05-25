@@ -24,7 +24,7 @@ OUTPUT_EDA_DIR = "data/outputs/eda"
 DATASET_NAME = "jlh-ibm/earnings_call"
 DATASET_CONFIG = "transcripts"
 
-SAMPLE_SIZE = 20
+SAMPLE_SIZE = 40
 
 
 def find_text_column(dataset_split):
@@ -171,7 +171,11 @@ def main():
     trigram_df = extract_ngrams(utterance_texts, ngram_range=(3, 3), max_features=50)
 
     print("Extracting TF-IDF keywords...")
-    tfidf_df = extract_tfidf_keywords(utterance_texts, max_features=50)
+    tfidf_df = extract_tfidf_keywords(
+        utterance_texts,
+        nlp,
+        max_features=50
+    )
 
     stats_df.to_csv(f"{OUTPUT_EDA_DIR}/basic_statistics.csv", index=False)
     section_stats_df.to_csv(f"{OUTPUT_EDA_DIR}/section_statistics.csv", index=False)
