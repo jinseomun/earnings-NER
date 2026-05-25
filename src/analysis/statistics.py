@@ -1,5 +1,6 @@
 import re
 import pandas as pd
+from tqdm import tqdm
 
 
 def clean_text(text: str) -> str:
@@ -16,8 +17,13 @@ def split_sentences_spacy(texts, nlp, limit=None):
     if limit:
         texts = texts[:limit]
 
-    for idx, text in enumerate(texts):
-        doc = nlp(clean_text(text))
+    for idx, doc in enumerate(
+        tqdm(
+            nlp.pipe(texts, batch_size=8),
+            total=len(texts),
+            desc="Sentence Splitting"
+        )
+    ):
         sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
 
         results.append({

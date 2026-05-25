@@ -17,7 +17,7 @@ from src.analysis.tfidf import extract_tfidf_keywords
 OUTPUT_DIR = "data/outputs/eda"
 DATASET_NAME = "jlh-ibm/earnings_call"
 DATASET_CONFIG = "transcripts"
-SAMPLE_SIZE = None
+SAMPLE_SIZE = 20
 
 
 def find_text_column(dataset_split):
