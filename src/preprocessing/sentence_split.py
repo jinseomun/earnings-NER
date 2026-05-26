@@ -20,6 +20,7 @@ def split_sentences(items, nlp):
         sentences = filter_sentences(raw_sentences)
 
         results.append({
+            "doc_id": item.get("doc_id"),
             "section": item["section"],
             "speaker": item["speaker"],
             "text": item["text"],
