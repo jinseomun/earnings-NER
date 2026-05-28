@@ -5,7 +5,7 @@ from peft import LoraConfig
 from trl import SFTTrainer, SFTConfig
 
 
-MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
+MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
 TRAIN_FILE = "data/annotation/qwen_train/qwen_train.jsonl"
 OUTPUT_DIR = "models/qwen_earnings_semantic_span_lora"
 
@@ -28,10 +28,12 @@ def main():
 
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_NAME,
-        quantization_config=bnb_config,
-        device_map="auto",
+        dtype=torch.float16,
+        device_map=None,
         trust_remote_code=True
     )
+
+    model.to("mps")
 
     dataset = load_dataset(
         "json",
@@ -69,12 +71,15 @@ def main():
         per_device_train_batch_size=1,
         gradient_accumulation_steps=8,
         learning_rate=2e-4,
-        logging_steps=5,
+        logging_steps=2,
+        logging_strategy="steps",
         save_steps=50,
+        save_strategy="steps",
         max_length=2048,
         packing=False,
-        bf16=True,
-        report_to="none"
+        bf16=False,
+        report_to="none",
+        disable_tqdm=False
     )
 
     trainer = SFTTrainer(

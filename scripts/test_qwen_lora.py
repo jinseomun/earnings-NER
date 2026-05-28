@@ -1,9 +1,9 @@
 import torch
 from peft import PeftModel
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-BASE_MODEL = "Qwen/Qwen2.5-1.5B-Instruct"
+BASE_MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
 LORA_PATH = "models/qwen_earnings_semantic_span_lora"
 
 
@@ -16,23 +16,27 @@ SYSTEM_PROMPT = (
 
 
 def main():
-    tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, trust_remote_code=True)
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
 
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
-        bnb_4bit_use_double_quant=True
+    tokenizer = AutoTokenizer.from_pretrained(
+        BASE_MODEL,
+        trust_remote_code=True
     )
 
     base_model = AutoModelForCausalLM.from_pretrained(
         BASE_MODEL,
-        quantization_config=bnb_config,
-        device_map="auto",
+        dtype=torch.float16 if device == "mps" else torch.float32,
         trust_remote_code=True
     )
 
-    model = PeftModel.from_pretrained(base_model, LORA_PATH)
+    base_model.to(device)
+
+    model = PeftModel.from_pretrained(
+        base_model,
+        LORA_PATH
+    )
+
+    model.to(device)
     model.eval()
 
     utterance = (
@@ -51,7 +55,10 @@ def main():
         add_generation_prompt=True
     )
 
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt"
+    ).to(device)
 
     with torch.no_grad():
         outputs = model.generate(
