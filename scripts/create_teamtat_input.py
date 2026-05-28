@@ -6,8 +6,8 @@ import random
 INPUT_PATH = "data/outputs/preprocessing/speaker_split.json"
 OUTPUT_DIR = "data/annotation/teamtat_input"
 
-TOTAL_UTTERANCES = 500
-MAX_UTTERANCES_PER_FILE = 100
+TOTAL_UTTERANCES = 300
+MAX_UTTERANCES_PER_FILE = 20
 RANDOM_SEED = 42
 
 
@@ -62,8 +62,9 @@ def main():
             for local_idx, item in enumerate(chunk):
                 sample_id = start + local_idx
 
+                f.write(f"[UTTERANCE_ID={sample_id}]\n")
                 f.write(item["text"])
-                f.write("\n\n====================\n\n")
+                f.write("\n\n[UTTERANCE_BOUNDARY]\n\n")
 
                 metadata.append({
                     "sample_id": sample_id,
