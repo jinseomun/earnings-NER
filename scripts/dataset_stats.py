@@ -3,7 +3,7 @@ from pathlib import Path
 from collections import Counter
 
 
-LABEL_DIR = Path("data/annotation/train_labels")
+LABEL_DIR = Path("data/annotation/gpt_relabel")
 VALID_LABELS = {"PRODUCT", "SEGMENT", "GROWTH_SIGNAL"}
 
 
@@ -13,7 +13,7 @@ def load_json(path):
 
 
 def main():
-    files = sorted(LABEL_DIR.glob("teamtat_doc_*_train.json"))
+    files = sorted(LABEL_DIR.glob("teamtat_doc_*_gpt.json"))
 
     utterance_count = 0
     annotated_utterance_count = 0

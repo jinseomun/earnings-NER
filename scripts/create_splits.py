@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 
-LABEL_DIR = Path("data/annotation/train_labels")
+LABEL_DIR = Path("data/annotation/gpt_relabel")
 INPUT_DIR = Path("data/annotation/teamtat_input")
 OUT_DIR = Path("data/annotation/splits")
 
@@ -50,7 +50,7 @@ def parse_teamtat_input_text(text):
 def load_all_texts():
     text_map = {}
 
-    files = sorted(INPUT_DIR.glob("teamtat_doc_*_input.txt"))
+    files = sorted(INPUT_DIR.glob("teamtat_doc_*_gpt.txt"))
 
     if not files:
         files = sorted(INPUT_DIR.glob("*.txt"))
@@ -66,7 +66,7 @@ def load_all_texts():
 def load_all_gold():
     all_items = []
 
-    files = sorted(LABEL_DIR.glob("teamtat_doc_*_train.json"))
+    files = sorted(LABEL_DIR.glob("teamtat_doc_*_gpt.json"))
 
     for file in files:
         data = load_json(file)
