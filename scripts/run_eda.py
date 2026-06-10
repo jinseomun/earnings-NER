@@ -4,6 +4,7 @@ import pandas as pd
 import spacy
 from datasets import load_dataset
 from tqdm import tqdm
+from src.analysis.visualization import save_bar_chart
 
 from src.analysis.statistics import (
     compute_basic_statistics,
@@ -208,6 +209,54 @@ def main():
     trigram_df.to_csv(f"{OUTPUT_EDA_DIR}/trigrams.csv", index=False)
     tfidf_df.to_csv(f"{OUTPUT_EDA_DIR}/tfidf_keywords.csv", index=False)
 
+    OUTPUT_FIGURE_DIR = f"{OUTPUT_EDA_DIR}/figures"
+    os.makedirs(OUTPUT_FIGURE_DIR, exist_ok=True)
+
+    save_bar_chart(
+        tfidf_df,
+        x_col="term",
+        y_col="tfidf_score",
+        title="Top TF-IDF Keywords",
+        output_path=f"{OUTPUT_FIGURE_DIR}/top_tfidf_keywords.png",
+        top_n=20,
+        xlabel="TF-IDF Score",
+        ylabel="Term"
+    )
+
+    save_bar_chart(
+        bigram_df,
+        x_col="ngram",
+        y_col="frequency",
+        title="Top Bigrams",
+        output_path=f"{OUTPUT_FIGURE_DIR}/top_bigrams.png",
+        top_n=20,
+        xlabel="Frequency",
+        ylabel="Bigram"
+    )
+
+    save_bar_chart(
+        section_stats_df,
+        x_col="section",
+        y_col="num_utterances",
+        title="Number of Utterances by Section",
+        output_path=f"{OUTPUT_FIGURE_DIR}/section_utterance_counts.png",
+        top_n=20,
+        xlabel="Number of Utterances",
+        ylabel="Section"
+    )
+
+    save_bar_chart(
+        speaker_stats_df,
+        x_col="speaker",
+        y_col="num_utterances",
+        title="Top Speakers by Number of Utterances",
+        output_path=f"{OUTPUT_FIGURE_DIR}/speaker_utterance_counts.png",
+        top_n=20,
+        xlabel="Number of Utterances",
+        ylabel="Speaker"
+    )
+    
+    
     print("\n=== Basic Statistics ===")
     print(stats_df)
 
